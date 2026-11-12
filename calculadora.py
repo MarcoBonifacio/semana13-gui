@@ -5,7 +5,7 @@ class Calculadora:
     def __init__(self):
         self.ventana = tk.Tk()
         self.ventana.title("Calculadora - Semana 13")
-        self.ventana.geometry("300x400")
+        self.ventana.geometry("400x400")
         self.ventana.resizable(False, False)
 
         # Display
