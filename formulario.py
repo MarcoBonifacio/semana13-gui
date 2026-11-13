@@ -77,7 +77,8 @@ class FormularioRegistro:
         ).pack(side="left", padx=10)
         tk.Button(
             btn_frame, text="Limpiar",
-            command=self.limpiar, width=15
+            command=self.limpiar, width=15,
+            bg="#F4A6A6", activebackground="#EFA0A0"
         ).pack(side="left", padx=10)
 #Paso 4: Implementar la validación
     def validar(self):
