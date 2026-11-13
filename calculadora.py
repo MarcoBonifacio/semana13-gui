@@ -40,6 +40,8 @@ class Calculadora:
                 )
                 if texto == 'C':
                     btn.configure(bg="#F4A6A6", activebackground="#EFA0A0")
+                elif texto == '=':
+                    btn.configure(bg="#A8D5BA", activebackground="#98C9AA")
                 btn.grid(row=i+1, column=j, padx=2, pady=2)
 #Paso 4: Implementar la lógica de eventos
     def click(self, valor):
