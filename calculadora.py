@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+import re
 
 class Calculadora:
     def __init__(self):
@@ -22,14 +23,16 @@ class Calculadora:
 #Paso 3: Agregar los botones
         # Definir botones en una matriz
         botones = [
-            ('7', '8', '9', '/'),
-            ('4', '5', '6', '*'),
-            ('1', '2', '3', '-'),
-            ('C', '0', '=', '+'),
+            ('7', '8', '9', '/', None),
+            ('4', '5', '6', '*', None),
+            ('1', '2', '3', '-', None),
+            ('C', '0', '%', '=', '+'),
         ]
 
         for i, fila in enumerate(botones):
             for j, texto in enumerate(fila):
+                if texto is None:
+                    continue
                 btn = tk.Button(
                     self.ventana,
                     text=texto,
@@ -47,9 +50,17 @@ class Calculadora:
     def click(self, valor):
         if valor == 'C':
             self.display.delete(0, tk.END)
+        elif valor == '%':
+            expresion = self.display.get()
+            if re.search(r'(\d+(?:\.\d*)?|\.\d+)$', expresion):
+                self.display.insert(tk.END, '%')
+            else:
+                messagebox.showerror(
+                    "Error", "Ingrese un número antes del porcentaje"
+                )
         elif valor == '=':
             try:
-                expresion = self.display.get()
+                expresion = self.resolver_porcentajes(self.display.get())
                 resultado = eval(expresion)
                 self.display.delete(0, tk.END)
                 self.display.insert(0, str(resultado))
@@ -58,6 +69,41 @@ class Calculadora:
                 self.display.delete(0, tk.END)
         else:
             self.display.insert(tk.END, valor)
+
+    def resolver_porcentajes(self, expresion):
+        while '%' in expresion:
+            coincidencia = re.search(
+                r'(\d+(?:\.\d*)?|\.\d+)%', expresion
+            )
+            if not coincidencia:
+                raise ValueError("Expresión de porcentaje inválida")
+
+            valor = float(coincidencia.group(1))
+            prefijo = expresion[:coincidencia.start()]
+            if prefijo.endswith(('-', '+')) and (
+                len(prefijo) == 1 or prefijo[-2] in '+-*/'
+            ):
+                if prefijo[-1] == '-':
+                    valor = -valor
+                prefijo = prefijo[:-1]
+
+            operador = re.search(r'([+\-*/])$', prefijo)
+            if operador:
+                operador_texto = operador.group(1)
+                izquierda = prefijo[:operador.start()]
+                if operador_texto in '+-' and izquierda:
+                    valor = eval(izquierda) * valor / 100
+                else:
+                    valor /= 100
+                prefijo = f"{izquierda}{operador_texto}"
+            else:
+                valor /= 100
+
+            expresion = (
+                f"{prefijo}{valor}{expresion[coincidencia.end():]}"
+            )
+
+        return expresion
 
     def run(self):
         self.ventana.mainloop()
