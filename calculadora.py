@@ -38,6 +38,8 @@ class Calculadora:
                     height=2,
                     command=lambda t=texto: self.click(t)
                 )
+                if texto == 'C':
+                    btn.configure(bg="#F4A6A6", activebackground="#EFA0A0")
                 btn.grid(row=i+1, column=j, padx=2, pady=2)
 #Paso 4: Implementar la lógica de eventos
     def click(self, valor):
